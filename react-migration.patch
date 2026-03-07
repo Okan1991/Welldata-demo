@@ -1,0 +1,476 @@
+diff --git a/AGENTS.md b/AGENTS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..113890034bc0d1ea278e4e72d2ca100c92224ac7
+--- /dev/null
++++ b/AGENTS.md
+@@ -0,0 +1,22 @@
++# AGENTS.md
++
++## Project
++**WellData Month-1 PIP demo**
++
++## Goals
++- Build a simple participant-facing demo.
++- Provide a timeline of questionnaire sessions.
++- Include a score explainability panel.
++- Show preventive action recommendations.
++
++## Constraints
++- Keep the UX very simple.
++- No backend integration yet.
++- Do **not** implement DPoP or UMA.
++- Do **not** implement pod write/read.
++- Focus on visible demo functionality.
++
++## Working Style
++- Prefer small, modular files.
++- Create small incremental commits.
++- Keep code readable and minimal.
+diff --git a/index.html b/index.html
+index fab903c4092036c75598fe497523497e59124829..7a7e97e818a7e67c69949047289b362ad1b00262 100644
+--- a/index.html
++++ b/index.html
+@@ -1,13 +1,12 @@
+ <!doctype html>
+ <html lang="en">
+   <head>
+     <meta charset="UTF-8" />
+-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-    <title>welldata-demo</title>
++    <title>WellData Demo</title>
+   </head>
+   <body>
+     <div id="app"></div>
+-    <script type="module" src="/src/main.js"></script>
++    <script type="module" src="/src/main.jsx"></script>
+   </body>
+ </html>
+diff --git a/package-lock.json b/package-lock.json
+index b993638efde9f4073254481aa2df89ee25597323..b7f6034f997d3c8214b5d6eca5e4e3c2e865ec5d 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,34 +1,38 @@
+ {
+   "name": "welldata-demo",
+   "version": "0.0.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "welldata-demo",
+       "version": "0.0.0",
++      "dependencies": {
++        "react": "^19.2.4",
++        "react-dom": "^19.2.4"
++      },
+       "devDependencies": {
+         "vite": "^7.3.1"
+       }
+     },
+     "node_modules/@esbuild/aix-ppc64": {
+       "version": "0.27.3",
+       "resolved": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.27.3.tgz",
+       "integrity": "sha512-9fJMTNFTWZMh5qwrBItuziu834eOCUcEqymSH7pY+zoMVEZg3gcPuBNxH1EvfVYe9h0x/Ptw8KBzv7qxb7l8dg==",
+       "cpu": [
+         "ppc64"
+       ],
+       "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+         "aix"
+       ],
+       "engines": {
+         "node": ">=18"
+       }
+     },
+     "node_modules/@esbuild/android-arm": {
+       "version": "0.27.3",
+       "resolved": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.27.3.tgz",
+       "integrity": "sha512-i5D1hPY7GIQmXlXhs2w8AWHhenb00+GxjxRncS2ZM7YNVGNfaMxgzSGuO8o8SJzRc/oZwU2bcScvVERk03QhzA==",
+@@ -931,95 +935,122 @@
+       "dev": true,
+       "funding": [
+         {
+           "type": "opencollective",
+           "url": "https://opencollective.com/postcss/"
+         },
+         {
+           "type": "tidelift",
+           "url": "https://tidelift.com/funding/github/npm/postcss"
+         },
+         {
+           "type": "github",
+           "url": "https://github.com/sponsors/ai"
+         }
+       ],
+       "license": "MIT",
+       "dependencies": {
+         "nanoid": "^3.3.11",
+         "picocolors": "^1.1.1",
+         "source-map-js": "^1.2.1"
+       },
+       "engines": {
+         "node": "^10 || ^12 || >=14"
+       }
+     },
++    "node_modules/react": {
++      "version": "19.2.4",
++      "resolved": "https://registry.npmjs.org/react/-/react-19.2.4.tgz",
++      "integrity": "sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/react-dom": {
++      "version": "19.2.4",
++      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.4.tgz",
++      "integrity": "sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==",
++      "license": "MIT",
++      "dependencies": {
++        "scheduler": "^0.27.0"
++      },
++      "peerDependencies": {
++        "react": "^19.2.4"
++      }
++    },
+     "node_modules/rollup": {
+       "version": "4.59.0",
+       "resolved": "https://registry.npmjs.org/rollup/-/rollup-4.59.0.tgz",
+       "integrity": "sha512-2oMpl67a3zCH9H79LeMcbDhXW/UmWG/y2zuqnF2jQq5uq9TbM9TVyXvA4+t+ne2IIkBdrLpAaRQAvo7YI/Yyeg==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "@types/estree": "1.0.8"
+       },
+       "bin": {
+         "rollup": "dist/bin/rollup"
+       },
+       "engines": {
+         "node": ">=18.0.0",
+         "npm": ">=8.0.0"
+       },
+       "optionalDependencies": {
+         "@rollup/rollup-android-arm-eabi": "4.59.0",
+         "@rollup/rollup-android-arm64": "4.59.0",
+         "@rollup/rollup-darwin-arm64": "4.59.0",
+         "@rollup/rollup-darwin-x64": "4.59.0",
+         "@rollup/rollup-freebsd-arm64": "4.59.0",
+         "@rollup/rollup-freebsd-x64": "4.59.0",
+         "@rollup/rollup-linux-arm-gnueabihf": "4.59.0",
+         "@rollup/rollup-linux-arm-musleabihf": "4.59.0",
+         "@rollup/rollup-linux-arm64-gnu": "4.59.0",
+         "@rollup/rollup-linux-arm64-musl": "4.59.0",
+         "@rollup/rollup-linux-loong64-gnu": "4.59.0",
+         "@rollup/rollup-linux-loong64-musl": "4.59.0",
+         "@rollup/rollup-linux-ppc64-gnu": "4.59.0",
+         "@rollup/rollup-linux-ppc64-musl": "4.59.0",
+         "@rollup/rollup-linux-riscv64-gnu": "4.59.0",
+         "@rollup/rollup-linux-riscv64-musl": "4.59.0",
+         "@rollup/rollup-linux-s390x-gnu": "4.59.0",
+         "@rollup/rollup-linux-x64-gnu": "4.59.0",
+         "@rollup/rollup-linux-x64-musl": "4.59.0",
+         "@rollup/rollup-openbsd-x64": "4.59.0",
+         "@rollup/rollup-openharmony-arm64": "4.59.0",
+         "@rollup/rollup-win32-arm64-msvc": "4.59.0",
+         "@rollup/rollup-win32-ia32-msvc": "4.59.0",
+         "@rollup/rollup-win32-x64-gnu": "4.59.0",
+         "@rollup/rollup-win32-x64-msvc": "4.59.0",
+         "fsevents": "~2.3.2"
+       }
+     },
++    "node_modules/scheduler": {
++      "version": "0.27.0",
++      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
++      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==",
++      "license": "MIT"
++    },
+     "node_modules/source-map-js": {
+       "version": "1.2.1",
+       "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
+       "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
+       "dev": true,
+       "license": "BSD-3-Clause",
+       "engines": {
+         "node": ">=0.10.0"
+       }
+     },
+     "node_modules/tinyglobby": {
+       "version": "0.2.15",
+       "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.15.tgz",
+       "integrity": "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "fdir": "^6.5.0",
+         "picomatch": "^4.0.3"
+       },
+       "engines": {
+         "node": ">=12.0.0"
+       },
+       "funding": {
+         "url": "https://github.com/sponsors/SuperchupuDev"
+diff --git a/package.json b/package.json
+index 66cf37a8fc91e76fe1f8b809312feae735790996..1e7e2f9133c349dccc030ab8ac72f3396af233ae 100644
+--- a/package.json
++++ b/package.json
+@@ -1,14 +1,18 @@
+ {
+   "name": "welldata-demo",
+   "private": true,
+   "version": "0.0.0",
+   "type": "module",
+   "scripts": {
+     "dev": "vite",
+     "build": "vite build",
+     "preview": "vite preview"
+   },
+   "devDependencies": {
+     "vite": "^7.3.1"
++  },
++  "dependencies": {
++    "react": "^19.2.4",
++    "react-dom": "^19.2.4"
+   }
+ }
+diff --git a/src/App.jsx b/src/App.jsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..395ab6d8cfbe1be48d0530aa9ea336afe412490e
+--- /dev/null
++++ b/src/App.jsx
+@@ -0,0 +1,36 @@
++function App() {
++  return (
++    <main className="page">
++      <h1>WellData Month-1 PIP Demo</h1>
++      <p className="subtitle">A simple participant view for the month-1 check-in.</p>
++
++      <section>
++        <h2>Questionnaire Timeline</h2>
++        <ul>
++          <li>Session 1: Baseline questionnaire completed</li>
++          <li>Session 2: Weekly check-in pending</li>
++          <li>Session 3: Follow-up review planned</li>
++        </ul>
++      </section>
++
++      <section>
++        <h2>Score Explainability</h2>
++        <p>
++          Current wellbeing score: <strong>72 / 100</strong>. Main contributors are sleep quality,
++          activity consistency, and stress check-ins.
++        </p>
++      </section>
++
++      <section>
++        <h2>Preventive Action Recommendations</h2>
++        <ul>
++          <li>Keep a regular bedtime for the next 7 days.</li>
++          <li>Add one 20-minute walk after lunch, 3 times this week.</li>
++          <li>Complete the next check-in before Friday.</li>
++        </ul>
++      </section>
++    </main>
++  )
++}
++
++export default App
+diff --git a/src/counter.js b/src/counter.js
+deleted file mode 100644
+index 881e2d7adf529f53f42db6b89252f17723f30804..0000000000000000000000000000000000000000
+--- a/src/counter.js
++++ /dev/null
+@@ -1,9 +0,0 @@
+-export function setupCounter(element) {
+-  let counter = 0
+-  const setCounter = (count) => {
+-    counter = count
+-    element.innerHTML = `count is ${counter}`
+-  }
+-  element.addEventListener('click', () => setCounter(counter + 1))
+-  setCounter(0)
+-}
+diff --git a/src/javascript.svg b/src/javascript.svg
+deleted file mode 100644
+index f9abb2b728d73b75ef8020c4846b534663c69a85..0000000000000000000000000000000000000000
+--- a/src/javascript.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path fill="#F7DF1E" d="M0 0h256v256H0V0Z"></path><path d="m67.312 213.932l19.59-11.856c3.78 6.701 7.218 12.371 15.465 12.371c7.905 0 12.89-3.092 12.89-15.12v-81.798h24.057v82.138c0 24.917-14.606 36.259-35.916 36.259c-19.245 0-30.416-9.967-36.087-21.996m85.07-2.576l19.588-11.341c5.157 8.421 11.859 14.607 23.715 14.607c9.969 0 16.325-4.984 16.325-11.858c0-8.248-6.53-11.17-17.528-15.98l-6.013-2.58c-17.357-7.387-28.87-16.667-28.87-36.257c0-18.044 13.747-31.792 35.228-31.792c15.294 0 26.292 5.328 34.196 19.247l-18.732 12.03c-4.125-7.389-8.591-10.31-15.465-10.31c-7.046 0-11.514 4.468-11.514 10.31c0 7.217 4.468 10.14 14.778 14.608l6.014 2.577c20.45 8.765 31.963 17.7 31.963 37.804c0 21.654-17.012 33.51-39.867 33.51c-22.339 0-36.774-10.654-43.819-24.574"></path></svg>
+\ No newline at end of file
+diff --git a/src/main.js b/src/main.js
+deleted file mode 100644
+index 5fc33587a255776191df88edb828ae42e5148aaf..0000000000000000000000000000000000000000
+--- a/src/main.js
++++ /dev/null
+@@ -1,24 +0,0 @@
+-import './style.css'
+-import javascriptLogo from './javascript.svg'
+-import viteLogo from '/vite.svg'
+-import { setupCounter } from './counter.js'
+-
+-document.querySelector('#app').innerHTML = `
+-  <div>
+-    <a href="https://vite.dev" target="_blank">
+-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
+-    </a>
+-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
+-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
+-    </a>
+-    <h1>Hello Vite!</h1>
+-    <div class="card">
+-      <button id="counter" type="button"></button>
+-    </div>
+-    <p class="read-the-docs">
+-      Click on the Vite logo to learn more
+-    </p>
+-  </div>
+-`
+-
+-setupCounter(document.querySelector('#counter'))
+diff --git a/src/main.jsx b/src/main.jsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..42618228312a3ed4f9f6e98697b8fdb0cff02f8f
+--- /dev/null
++++ b/src/main.jsx
+@@ -0,0 +1,10 @@
++import { StrictMode } from 'react'
++import { createRoot } from 'react-dom/client'
++import './style.css'
++import App from './App.jsx'
++
++createRoot(document.getElementById('app')).render(
++  <StrictMode>
++    <App />
++  </StrictMode>,
++)
+diff --git a/src/style.css b/src/style.css
+index 8df73e3b2d7df3fb5c3fd14e602f9c9eac2d86f1..d43fc3928d876c7253be2c2c1dc070de9de988c1 100644
+--- a/src/style.css
++++ b/src/style.css
+@@ -1,96 +1,49 @@
+ :root {
+-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
++  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
++  color: #111827;
++  background: #f9fafb;
+   line-height: 1.5;
+-  font-weight: 400;
+-
+-  color-scheme: light dark;
+-  color: rgba(255, 255, 255, 0.87);
+-  background-color: #242424;
+-
+-  font-synthesis: none;
+-  text-rendering: optimizeLegibility;
+-  -webkit-font-smoothing: antialiased;
+-  -moz-osx-font-smoothing: grayscale;
+ }
+ 
+-a {
+-  font-weight: 500;
+-  color: #646cff;
+-  text-decoration: inherit;
+-}
+-a:hover {
+-  color: #535bf2;
++* {
++  box-sizing: border-box;
+ }
+ 
+ body {
+   margin: 0;
+-  display: flex;
+-  place-items: center;
+-  min-width: 320px;
+-  min-height: 100vh;
++  background: #f9fafb;
+ }
+ 
+-h1 {
+-  font-size: 3.2em;
+-  line-height: 1.1;
+-}
+-
+-#app {
+-  max-width: 1280px;
++.page {
++  max-width: 760px;
+   margin: 0 auto;
+-  padding: 2rem;
+-  text-align: center;
++  padding: 2rem 1rem 3rem;
+ }
+ 
+-.logo {
+-  height: 6em;
+-  padding: 1.5em;
+-  will-change: filter;
+-  transition: filter 300ms;
+-}
+-.logo:hover {
+-  filter: drop-shadow(0 0 2em #646cffaa);
+-}
+-.logo.vanilla:hover {
+-  filter: drop-shadow(0 0 2em #f7df1eaa);
+-}
+-
+-.card {
+-  padding: 2em;
++h1 {
++  margin-bottom: 0.4rem;
++  font-size: 1.9rem;
+ }
+ 
+-.read-the-docs {
+-  color: #888;
++.subtitle {
++  margin-top: 0;
++  color: #4b5563;
+ }
+ 
+-button {
++section {
++  margin-top: 1.5rem;
++  padding: 1rem;
++  background: #ffffff;
++  border: 1px solid #e5e7eb;
+   border-radius: 8px;
+-  border: 1px solid transparent;
+-  padding: 0.6em 1.2em;
+-  font-size: 1em;
+-  font-weight: 500;
+-  font-family: inherit;
+-  background-color: #1a1a1a;
+-  cursor: pointer;
+-  transition: border-color 0.25s;
+-}
+-button:hover {
+-  border-color: #646cff;
+ }
+-button:focus,
+-button:focus-visible {
+-  outline: 4px auto -webkit-focus-ring-color;
++
++h2 {
++  margin-top: 0;
++  font-size: 1.1rem;
+ }
+ 
+-@media (prefers-color-scheme: light) {
+-  :root {
+-    color: #213547;
+-    background-color: #ffffff;
+-  }
+-  a:hover {
+-    color: #747bff;
+-  }
+-  button {
+-    background-color: #f9f9f9;
+-  }
++ul {
++  margin: 0.5rem 0 0;
++  padding-left: 1.2rem;
+ }
