@@ -8,17 +8,28 @@ function Explainability() {
 
   return (
     <SectionCard title="Score Explainability">
+
       <p>
         Current wellbeing score: <strong>{wellbeing.score} / 100</strong>
       </p>
 
-      <ul>
+      <div style={{ marginTop: '10px' }}>
         {wellbeing.factors.map((factor) => (
-          <li key={factor.key}>
-            {factor.label}: {factor.value}
-          </li>
+          <div
+            key={factor.key}
+            style={{
+              padding: '8px',
+              border: '1px solid #ddd',
+              borderRadius: '6px',
+              marginBottom: '6px',
+              background: '#fafafa'
+            }}
+          >
+            <strong>{factor.label}</strong>
+            <div>{factor.value}</div>
+          </div>
         ))}
-      </ul>
+      </div>
 
     </SectionCard>
   )
