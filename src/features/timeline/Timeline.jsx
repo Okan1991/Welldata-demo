@@ -1,31 +1,31 @@
 import React from 'react'
+import SectionCard from '../../components/SectionCard.jsx'
+import StatusMessage from '../../components/StatusMessage.jsx'
 import { mockParticipant } from '../../data/mockParticipant'
 
-export default function Timeline() {
-
+function Timeline() {
   const sessions = mockParticipant.sessions
   const currentSessionId = mockParticipant.currentSessionId
 
-  const currentSession = sessions.find(
-    (s) => s.id === currentSessionId
-  )
+  const currentSession = sessions.find((s) => s.id === currentSessionId)
 
   return (
-    <div>
-
-      <p>
-        <strong>Current session:</strong>{' '}
-        {currentSession ? currentSession.label : 'Unknown'}
-      </p>
+    <SectionCard title="Questionnaire Timeline">
+      <StatusMessage
+        label="Current session"
+        value={currentSession ? currentSession.label : 'Unknown'}
+      />
 
       <ul>
         {sessions.map((session) => (
           <li key={session.id}>
-            {session.label}
+            <strong>{session.date}</strong> — {session.label} — Status: {session.status}
+            {session.overallScore !== null ? ` — Score: ${session.overallScore}/100` : ''}
           </li>
         ))}
       </ul>
-
-    </div>
+    </SectionCard>
   )
 }
+
+export default Timeline
