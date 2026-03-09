@@ -7,7 +7,7 @@ function Timeline() {
   const sessions = mockParticipant.sessions
   const currentSessionId = mockParticipant.currentSessionId
 
-  const currentSession = sessions.find((s) => s.id === currentSessionId)
+  const currentSession = sessions.find((session) => session.id === currentSessionId)
 
   return (
     <SectionCard title="Questionnaire Timeline">
@@ -19,7 +19,8 @@ function Timeline() {
       <ul>
         {sessions.map((session) => (
           <li key={session.id}>
-            <strong>{session.date}</strong> — {session.label} — Status: {session.status}
+            <strong>{session.date}</strong> — {session.label} — Status: {session.status} — Trend:{' '}
+            {session.trendLabel}
             {session.overallScore !== null ? ` — Score: ${session.overallScore}/100` : ''}
           </li>
         ))}

@@ -8,6 +8,7 @@ export const mockParticipant = {
       date: '2026-03-01',
       overallScore: 68,
       status: 'Completed',
+      trendLabel: 'Needs attention',
       label: 'Baseline questionnaire completed',
     },
     {
@@ -15,6 +16,7 @@ export const mockParticipant = {
       date: '2026-03-08',
       overallScore: 72,
       status: 'Pending',
+      trendLabel: 'Improving',
       label: 'Weekly check-in pending',
     },
     {
@@ -22,6 +24,7 @@ export const mockParticipant = {
       date: '2026-03-15',
       overallScore: null,
       status: 'Planned',
+      trendLabel: 'Planned review',
       label: 'Follow-up review planned',
     },
   ],
