@@ -1,17 +1,25 @@
 import React from 'react'
 import SectionCard from '../../components/SectionCard.jsx'
+import { mockParticipant } from '../../data/mockParticipant'
 
 function Explainability() {
+
+  const wellbeing = mockParticipant.wellbeing
+
   return (
     <SectionCard title="Score Explainability">
       <p>
-        Current wellbeing score: <strong>72 / 100</strong>
+        Current wellbeing score: <strong>{wellbeing.score} / 100</strong>
       </p>
+
       <ul>
-        <li>Sleep quality: stable</li>
-        <li>Activity consistency: moderate improvement</li>
-        <li>Stress check-ins: mixed over the past week</li>
+        {wellbeing.factors.map((factor) => (
+          <li key={factor.key}>
+            {factor.label}: {factor.value}
+          </li>
+        ))}
       </ul>
+
     </SectionCard>
   )
 }
