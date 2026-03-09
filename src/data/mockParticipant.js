@@ -2,6 +2,7 @@ export const mockParticipant = {
   participantId: 'P-001',
   name: 'Demo Participant',
   currentSessionId: 'session-2',
+
   sessions: [
     {
       id: 'session-1',
@@ -28,14 +29,20 @@ export const mockParticipant = {
       label: 'Follow-up review planned',
     },
   ],
+
   wellbeing: {
     score: 72,
+
+    summary: "Overall wellbeing slightly improved compared to last week.",
+    focusArea: "Sleep regularity",
+
     factors: [
       { key: 'sleep', label: 'Sleep quality', value: 'stable' },
       { key: 'activity', label: 'Activity consistency', value: 'moderate improvement' },
       { key: 'stress', label: 'Stress check-ins', value: 'mixed over the past week' },
     ],
   },
+
   recommendations: [
     'Keep a regular bedtime for the next 7 days.',
     'Add one 20-minute walk after lunch, 3 times this week.',
