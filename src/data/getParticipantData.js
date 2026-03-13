@@ -1,33 +1,23 @@
-import { mockParticipant, OBSERVATION_DOMAINS, getDomainMeta } from './mockParticipant'
+import {
+  mockParticipantA,
+  mockParticipantB,
+  OBSERVATION_DOMAINS,
+  getDomainMeta,
+} from './mockParticipant'
 
-const DATA_MODE = 'mock' // later: 'backend'
-
-/**
- * Main data entry point for the dashboard.
- * In Phase 2 we still return mock data, but via an adapter layer
- * so that the UI no longer depends directly on the mock source.
- */
-export async function getParticipantData() {
-  if (DATA_MODE === 'mock') {
-    return Promise.resolve(mockParticipant)
+export function getParticipantData(userId = 'A') {
+  if (userId === 'B') {
+    return mockParticipantB
   }
 
-  // Placeholder for future backend integration (Phase 3)
-  throw new Error('Backend mode not yet implemented.')
+  return mockParticipantA
 }
 
-/**
- * Return only completed sessions.
- */
 export function getCompletedSessions(participant) {
   if (!participant?.sessions) return []
   return participant.sessions.filter((session) => session.status === 'completed')
 }
 
-/**
- * Return domain rows for a specific session:
- * [{ key, label, score, meta }]
- */
 export function getSessionDomainBreakdown(session) {
   if (!session?.domainScores) return []
 
@@ -39,9 +29,6 @@ export function getSessionDomainBreakdown(session) {
   }))
 }
 
-/**
- * Compare two sessions side by side for Timeline comparison view.
- */
 export function compareSessions(sessionA, sessionB) {
   if (!sessionA?.domainScores || !sessionB?.domainScores) return []
 
@@ -65,10 +52,6 @@ export function compareSessions(sessionA, sessionB) {
   })
 }
 
-/**
- * Return all domains sorted by score (ascending),
- * useful for explainability ranking.
- */
 export function getSortedDomains(session) {
   return getSessionDomainBreakdown(session).sort((a, b) => {
     const aScore = a.score ?? -Infinity
@@ -77,9 +60,6 @@ export function getSortedDomains(session) {
   })
 }
 
-/**
- * Recommendations enriched with domain metadata.
- */
 export function getRecommendationsWithMeta(participant) {
   if (!participant?.recommendations) return []
 

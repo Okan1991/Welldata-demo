@@ -5,9 +5,6 @@
  * - Observation domains from IG §11.3 with SNOMED-CT / LOINC codes
  * - QuestionnaireResponse structure from IG §11.4
  * - Gezondheidsgids questionnaire themes from IG §10
- *
- * This mock will be replaced by the adapter layer (getParticipantData.js)
- * once backend / pod integration is available.
  */
 
 // ── Observation domain definitions (IG §11.3) ──────────────────────────
@@ -70,17 +67,14 @@ export const OBSERVATION_DOMAINS = [
   },
 ]
 
-// ── Helper: domain lookup ──────────────────────────────────────────────
 export function getDomainMeta(key) {
   return OBSERVATION_DOMAINS.find((d) => d.key === key) || null
 }
 
-// ── Mock participant with per-session, per-domain scores ───────────────
-export const mockParticipant = {
+const participantABase = {
   participantId: 'P-001',
-  name: 'Demo Participant',
+  name: 'Demo Participant A',
   currentSessionId: 'session-2',
-
   sessions: [
     {
       id: 'session-1',
@@ -121,17 +115,13 @@ export const mockParticipant = {
       domainScores: null,
     },
   ],
-
-  // Derived from most recent completed session (session-2)
   currentWellbeing: {
     score: 72,
     maxScore: 100,
     sessionId: 'session-2',
     summary: 'Overall wellbeing slightly improved compared to last week.',
-    focusDomain: 'stress', // lowest-scoring domain
+    focusDomain: 'stress',
   },
-
-  // Generated from domains scoring below threshold (< 6.0)
   recommendations: [
     {
       id: 'rec-1',
@@ -139,7 +129,7 @@ export const mockParticipant = {
       triggerDomain: 'stress',
       triggerScore: 5.0,
       threshold: 6.0,
-      status: 'pending', // pending | acknowledged | completed
+      status: 'pending',
     },
     {
       id: 'rec-2',
@@ -152,10 +142,95 @@ export const mockParticipant = {
     {
       id: 'rec-3',
       text: 'Complete the next check-in before Friday.',
-      triggerDomain: null, // general platform engagement
+      triggerDomain: null,
       triggerScore: null,
       threshold: null,
       status: 'pending',
     },
   ],
 }
+
+const participantBBase = {
+  participantId: 'P-002',
+  name: 'Demo Participant B',
+  currentSessionId: 'session-2',
+  sessions: [
+    {
+      id: 'session-1',
+      date: '2026-03-01',
+      label: 'Baseline questionnaire completed',
+      status: 'completed',
+      overallScore: 61,
+      domainScores: {
+        stress: 7.0,
+        physical_exercise: 4.5,
+        daily_life: 6.0,
+        social_contact: 6.5,
+        alcohol: 8.0,
+        smoking: 8.0,
+      },
+    },
+    {
+      id: 'session-2',
+      date: '2026-03-08',
+      label: 'Weekly check-in',
+      status: 'completed',
+      overallScore: 64,
+      domainScores: {
+        stress: 7.5,
+        physical_exercise: 5.0,
+        daily_life: 6.5,
+        social_contact: 6.0,
+        alcohol: 8.0,
+        smoking: 8.0,
+      },
+    },
+    {
+      id: 'session-3',
+      date: '2026-03-15',
+      label: 'Follow-up review',
+      status: 'planned',
+      overallScore: null,
+      domainScores: null,
+    },
+  ],
+  currentWellbeing: {
+    score: 64,
+    maxScore: 100,
+    sessionId: 'session-2',
+    summary: 'Physical exercise remains the main improvement area this week.',
+    focusDomain: 'physical_exercise',
+  },
+  recommendations: [
+    {
+      id: 'rec-1',
+      text: 'Add two 15-minute walks on workdays this week.',
+      triggerDomain: 'physical_exercise',
+      triggerScore: 5.0,
+      threshold: 6.0,
+      status: 'pending',
+    },
+    {
+      id: 'rec-2',
+      text: 'Plan one social activity with a friend or relative this week.',
+      triggerDomain: 'social_contact',
+      triggerScore: 6.0,
+      threshold: 6.5,
+      status: 'pending',
+    },
+    {
+      id: 'rec-3',
+      text: 'Complete the next check-in before Friday.',
+      triggerDomain: null,
+      triggerScore: null,
+      threshold: null,
+      status: 'pending',
+    },
+  ],
+}
+
+export const mockParticipantA = participantABase
+export const mockParticipantB = participantBBase
+
+// Backward-compatible default export target
+export const mockParticipant = mockParticipantA

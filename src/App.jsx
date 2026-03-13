@@ -12,6 +12,7 @@ import {
 } from './data/getParticipantData.js'
 
 function App() {
+  const [userId, setUserId] = useState('A')
   const [participant, setParticipant] = useState(null)
   const [selectedSessionId, setSelectedSessionId] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -21,7 +22,8 @@ function App() {
     async function loadData() {
       try {
         setLoading(true)
-        const data = await getParticipantData()
+        setError('')
+        const data = await getParticipantData(userId)
         setParticipant(data)
         setSelectedSessionId(data.currentSessionId)
       } catch (err) {
@@ -32,7 +34,7 @@ function App() {
     }
 
     loadData()
-  }, [])
+  }, [userId])
 
   const completedSessions = participant
     ? getCompletedSessions(participant)
@@ -47,6 +49,21 @@ function App() {
       subtitle="Participant dashboard for timeline, explainability, and preventive action support."
     >
       <ErrorBanner message={error} />
+
+      <div style={{ marginBottom: '16px' }}>
+        <label htmlFor="userSelect" style={{ marginRight: '8px' }}>
+          Demo user:
+        </label>
+
+        <select
+          id="userSelect"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+        >
+          <option value="A">User A</option>
+          <option value="B">User B</option>
+        </select>
+      </div>
 
       {loading && <p>Loading participant data...</p>}
 
