@@ -1,32 +1,68 @@
-import React from 'react'
-import SectionCard from '../../components/SectionCard.jsx'
-import StatusMessage from '../../components/StatusMessage.jsx'
-import { mockParticipant } from '../../data/mockParticipant'
+import React, { useState } from 'react'
+import {
+  getCompletedSessions,
+  getSessionDomainBreakdown,
+  compareSessions,
+} from '../../data/getParticipantData.js'
 
-function Timeline() {
-  const sessions = mockParticipant.sessions
-  const currentSessionId = mockParticipant.currentSessionId
+export default function Timeline({ participant }) {
+  const completedSessions = getCompletedSessions(participant)
 
-  const currentSession = sessions.find((session) => session.id === currentSessionId)
+  const [selectedSessionId, setSelectedSessionId] = useState(
+    participant?.currentSessionId
+  )
+  const [compareSessionId, setCompareSessionId] = useState(null)
+
+  const selectedSession = completedSessions.find(
+    (s) => s.id === selectedSessionId
+  )
+
+  const compareSession = completedSessions.find(
+    (s) => s.id === compareSessionId
+  )
+
+  if (!completedSessions.length) {
+    return <p>No completed sessions available.</p>
+  }
 
   return (
-    <SectionCard title="Questionnaire Timeline">
-      <StatusMessage
-        label="Current session"
-        value={currentSession ? currentSession.label : 'Unknown'}
-      />
+    <div>
+      <h3>Timeline</h3>
 
-      <ul>
-        {sessions.map((session) => (
-          <li key={session.id}>
-            <strong>{session.date}</strong> — {session.label} — Status: {session.status} — Trend:{' '}
-            {session.trendLabel}
-            {session.overallScore !== null ? ` — Score: ${session.overallScore}/100` : ''}
-          </li>
-        ))}
-      </ul>
-    </SectionCard>
+      {completedSessions.map((session) => (
+        <div key={session.id} style={{ marginBottom: '8px' }}>
+          <button onClick={() => setSelectedSessionId(session.id)}>
+            {session.date} — score {session.overallScore}
+          </button>{' '}
+          <button onClick={() => setCompareSessionId(session.id)}>
+            Compare
+          </button>
+        </div>
+      ))}
+
+      {selectedSession && (
+        <div style={{ marginTop: '16px' }}>
+          <h4>Session breakdown</h4>
+
+          {getSessionDomainBreakdown(selectedSession).map((domain) => (
+            <div key={domain.key}>
+              {domain.label}: {domain.score}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {selectedSession && compareSession && (
+        <div style={{ marginTop: '16px' }}>
+          <h4>Session comparison</h4>
+
+          {compareSessions(compareSession, selectedSession).map((row) => (
+            <div key={row.key}>
+              {row.label}: {row.scoreA} → {row.scoreB} (Δ {row.delta})
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
-
-export default Timeline

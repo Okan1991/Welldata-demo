@@ -1,75 +1,92 @@
 import React, { useState } from 'react'
-import SectionCard from '../../components/SectionCard.jsx'
-import { mockParticipant } from '../../data/mockParticipant'
+import { getRecommendationsWithMeta } from '../../data/getParticipantData.js'
 
-function ActionPanel() {
-  const [status, setStatus] = useState({})
-  const recommendations = mockParticipant.recommendations
+export default function ActionPanel({ participant }) {
+  const [statusMap, setStatusMap] = useState({})
 
-  function acknowledge(index) {
-    setStatus((prev) => ({
-      ...prev,
-      [index]: 'acknowledged'
-    }))
+  if (!participant) {
+    return <p>No participant data available.</p>
   }
 
-  function complete(index) {
-    setStatus((prev) => ({
+  const recommendations = getRecommendationsWithMeta(participant)
+
+  if (!recommendations.length) {
+    return <p>No recommendations available.</p>
+  }
+
+  function cycleStatus(currentStatus) {
+    if (currentStatus === 'pending') return 'acknowledged'
+    if (currentStatus === 'acknowledged') return 'completed'
+    return 'pending'
+  }
+
+  function handleStatusChange(id, fallbackStatus) {
+    setStatusMap((prev) => ({
       ...prev,
-      [index]: 'completed'
+      [id]: cycleStatus(prev[id] || fallbackStatus),
     }))
   }
 
   return (
-    <SectionCard title="Preventive Action Recommendations">
-      <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-        {recommendations.map((recommendation, index) => {
+    <div>
+      {recommendations.map((recommendation) => {
+        const currentStatus =
+          statusMap[recommendation.id] || recommendation.status
 
-          const currentStatus = status[index] || 'pending'
+        return (
+          <div
+            key={recommendation.id}
+            style={{
+              border: '1px solid #ddd',
+              borderRadius: '6px',
+              padding: '12px',
+              marginBottom: '12px',
+            }}
+          >
+            <p>{recommendation.text}</p>
 
-          return (
-            <li
-              key={index}
-              style={{
-                marginBottom: '10px',
-                padding: '10px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                background: '#fafafa'
-              }}
+            <p>
+              <strong>Status:</strong> {currentStatus}
+            </p>
+
+            {recommendation.domainMeta && (
+              <>
+                <p>
+                  <strong>Triggering domain:</strong>{' '}
+                  {recommendation.domainMeta.label}
+                </p>
+
+                <p>
+                  <strong>Code:</strong> {recommendation.domainMeta.code}
+                </p>
+              </>
+            )}
+
+            {recommendation.triggerScore !== null &&
+              recommendation.triggerScore !== undefined && (
+                <p>
+                  <strong>Trigger score:</strong> {recommendation.triggerScore}
+                </p>
+              )}
+
+            {recommendation.threshold !== null &&
+              recommendation.threshold !== undefined && (
+                <p>
+                  <strong>Threshold:</strong> {recommendation.threshold}
+                </p>
+              )}
+
+            <button
+              type="button"
+              onClick={() =>
+                handleStatusChange(recommendation.id, recommendation.status)
+              }
             >
-              <div style={{ marginBottom: '8px' }}>
-                {recommendation}
-              </div>
-
-              <div style={{ fontSize: '13px', marginBottom: '6px' }}>
-                Status: <strong>{currentStatus}</strong>
-              </div>
-
-              {currentStatus === 'pending' && (
-                <button onClick={() => acknowledge(index)}>
-                  Acknowledge
-                </button>
-              )}
-
-              {currentStatus === 'acknowledged' && (
-                <button onClick={() => complete(index)}>
-                  Mark completed
-                </button>
-              )}
-
-              {currentStatus === 'completed' && (
-                <span style={{ color: 'green' }}>
-                  ✓ Completed
-                </span>
-              )}
-
-            </li>
-          )
-        })}
-      </ul>
-    </SectionCard>
+              Update status
+            </button>
+          </div>
+        )
+      })}
+    </div>
   )
 }
-
-export default ActionPanel

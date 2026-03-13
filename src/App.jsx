@@ -1,52 +1,84 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PageShell from './components/PageShell.jsx'
+import SectionCard from './components/SectionCard.jsx'
+import ErrorBanner from './components/ErrorBanner.jsx'
+import ParticipantSummary from './components/ParticipantSummary.jsx'
 import Timeline from './features/timeline/Timeline.jsx'
 import Explainability from './features/explainability/Explainability.jsx'
 import ActionPanel from './features/actions/ActionPanel.jsx'
-import { mockParticipant } from './data/mockParticipant'
+import {
+  getParticipantData,
+  getCompletedSessions,
+} from './data/getParticipantData.js'
 
 function App() {
+  const [participant, setParticipant] = useState(null)
+  const [selectedSessionId, setSelectedSessionId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const wellbeing = mockParticipant.wellbeing
-  const recommendations = mockParticipant.recommendations
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true)
+        const data = await getParticipantData()
+        setParticipant(data)
+        setSelectedSessionId(data.currentSessionId)
+      } catch (err) {
+        setError(err.message || 'Failed to load participant data.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  const completedSessions = participant
+    ? getCompletedSessions(participant)
+    : []
+
+  const selectedSession =
+    completedSessions.find((session) => session.id === selectedSessionId) || null
 
   return (
     <PageShell
       title="WellData Month-1 PIP Demo"
-      subtitle="Simple participant dashboard for timeline, explainability, and preventive actions."
+      subtitle="Participant dashboard for timeline, explainability, and preventive action support."
     >
+      <ErrorBanner message={error} />
 
-      <div
-        style={{
-          border: '1px solid #ddd',
-          padding: '12px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          background: '#f5f7fa'
-        }}
-      >
-        <strong>Participant summary</strong>
+      {loading && <p>Loading participant data...</p>}
 
-        <div style={{ marginTop: '8px' }}>
-          Current score: <strong>{wellbeing.score}/100</strong>
-        </div>
+      {!loading && participant && (
+        <>
+          <SectionCard title="Participant summary">
+            <ParticipantSummary
+              wellbeing={participant.currentWellbeing}
+              recommendations={participant.recommendations}
+            />
+          </SectionCard>
 
-        <div>
-          Focus area: <strong>{wellbeing.focusArea}</strong>
-        </div>
+          <SectionCard title="Questionnaire Timeline">
+            <Timeline
+              participant={participant}
+              selectedSessionId={selectedSessionId}
+              onSelectSession={setSelectedSessionId}
+            />
+          </SectionCard>
 
-        <div>
-          Recommendations available: <strong>{recommendations.length}</strong>
-        </div>
+          <SectionCard title="Score Explainability">
+            <Explainability
+              participant={participant}
+              selectedSession={selectedSession}
+            />
+          </SectionCard>
 
-      </div>
-
-      <Timeline />
-
-      <Explainability />
-
-      <ActionPanel />
-
+          <SectionCard title="Preventive Action Recommendations">
+            <ActionPanel participant={participant} />
+          </SectionCard>
+        </>
+      )}
     </PageShell>
   )
 }
