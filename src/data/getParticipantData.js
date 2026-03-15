@@ -5,12 +5,19 @@ import {
   getDomainMeta,
 } from './mockParticipant'
 
-export function getParticipantData(userId = 'A') {
+export async function getParticipantData(userId = 'A') {
   if (userId === 'B') {
     return mockParticipantB
   }
 
-  return mockParticipantA
+  const response = await fetch('http://localhost:3000/api/participant')
+  const result = await response.json()
+
+  if (!response.ok || !result.success || !result.participant) {
+    throw new Error('Failed to load participant data from backend.')
+  }
+
+  return result.participant
 }
 
 export function getCompletedSessions(participant) {
