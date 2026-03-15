@@ -79,3 +79,24 @@ export function getRecommendationsWithMeta(participant) {
 }
 
 export { OBSERVATION_DOMAINS, getDomainMeta }
+
+export async function submitSurvey(webId, fhirData = []) {
+  const response = await fetch('http://localhost:3000/api/survey/save', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      webId,
+      fhirData,
+    }),
+  })
+
+  const result = await response.json()
+
+  if (!response.ok || !result.success) {
+    throw new Error('Failed to submit survey.')
+  }
+
+  return result
+}

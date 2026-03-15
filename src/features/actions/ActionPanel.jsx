@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { submitSurvey } from '../../data/getParticipantData'
 import { getRecommendationsWithMeta } from '../../data/getParticipantData.js'
 
 export default function ActionPanel({ participant }) {
@@ -27,8 +28,37 @@ export default function ActionPanel({ participant }) {
     }))
   }
 
+  async function handleTestSurveySave() {
+    try {
+      const result = await submitSurvey(
+        'https://example.org/profile/card#me',
+        [
+          {
+            linkId: 'q1',
+            text: 'Stress',
+            answer: [{ valueString: 'Often' }],
+          },
+        ]
+      )
+
+      console.log('Survey saved:', result)
+      alert('Survey opgeslagen (test)')
+    } catch (error) {
+      console.error(error)
+      alert('Survey opslaan mislukt')
+    }
+  }
+
   return (
     <div>
+      <button
+        type="button"
+        onClick={handleTestSurveySave}
+        style={{ marginBottom: '16px' }}
+      >
+        Test survey save
+      </button>
+
       {recommendations.map((recommendation) => {
         const currentStatus =
           statusMap[recommendation.id] || recommendation.status

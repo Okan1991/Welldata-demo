@@ -6,6 +6,8 @@ const cors = require('cors')
 const fs = require('fs')
 const path = require('path')
 
+const surveyRoutes = require('./routes/surveyRoutes.cjs')
+
 const {
   exchangeHtiToken,
 } = require('./services/tokenService.cjs')
@@ -19,6 +21,8 @@ const PORT = process.env.PORT || 3000
 
 app.use(cors())
 app.use(express.json())
+
+app.use('/api', surveyRoutes)
 
 // ------------------------------
 // In-memory auth debug state
@@ -164,6 +168,7 @@ app.post('/api/test-pod-write', async (req, res) => {
   }
 })
 
+/*
 // ------------------------------
 // 5. Local survey save fallback
 // ------------------------------
@@ -207,6 +212,7 @@ app.post('/api/survey/save', async (req, res) => {
     })
   }
 })
+*/  
 
 // ------------------------------
 // 6. Participant data route
