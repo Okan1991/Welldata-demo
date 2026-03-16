@@ -17,6 +17,7 @@ async function exchangeHtiToken(htiToken) {
       success: false,
       error: 'Could not extract WebID from HTI token',
       mode: 'baseline-hti-direct',
+      requiresRealAccessToken: true,
     }
   }
 
@@ -25,7 +26,9 @@ async function exchangeHtiToken(htiToken) {
     webId,
     accessToken: htiToken,
     mode: 'baseline-hti-direct',
-    message: 'Using HTI token directly as baseline access token',
+    message:
+      'HTI token received and decoded, but real backend access token is still required for protected writes',
+    requiresRealAccessToken: true,
   }
 }
 

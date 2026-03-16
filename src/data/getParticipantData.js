@@ -100,3 +100,19 @@ export async function submitSurvey(webId, fhirData = []) {
 
   return result
 }
+
+export async function getAuthDebugStatus(token) {
+  const response = await fetch('http://localhost:3000/api/auth/debug-status', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error('Failed to load auth debug status.')
+  }
+
+  return result
+}

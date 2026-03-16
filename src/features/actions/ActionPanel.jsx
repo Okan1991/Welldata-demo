@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
-import { submitSurvey } from '../../data/getParticipantData'
+import {
+  submitSurvey,
+  getAuthDebugStatus,
+} from '../../data/getParticipantData'
 import { getRecommendationsWithMeta } from '../../data/getParticipantData.js'
 
 export default function ActionPanel({ participant }) {
@@ -49,6 +52,40 @@ export default function ActionPanel({ participant }) {
     }
   }
 
+  async function handleAuthDebugTest() {
+    try {
+      const result = await getAuthDebugStatus('TEST_TOKEN')
+
+      console.log('Auth debug result:', result)
+      alert(JSON.stringify(result, null, 2))
+    } catch (error) {
+      console.error(error)
+      alert('Auth debug test failed')
+    }
+  }
+
+  async function handleTokenExchangeTest() {
+    try {
+      const response = await fetch('http://localhost:3000/api/exchange-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          htiToken: 'TEST_TOKEN',
+        }),
+      })
+
+      const result = await response.json()
+
+      console.log('Token exchange result:', result)
+      alert(JSON.stringify(result, null, 2))
+    } catch (error) {
+      console.error(error)
+      alert('Token exchange test failed')
+    }
+  }
+
   return (
     <div>
       <button
@@ -57,6 +94,22 @@ export default function ActionPanel({ participant }) {
         style={{ marginBottom: '16px' }}
       >
         Test survey save
+      </button>
+
+      <button
+        type="button"
+        onClick={handleAuthDebugTest}
+        style={{ marginBottom: '16px', marginLeft: '8px' }}
+      >
+        Test auth debug
+      </button>
+
+      <button
+        type="button"
+        onClick={handleTokenExchangeTest}
+        style={{ marginBottom: '16px', marginLeft: '8px' }}
+      >
+        Test token exchange
       </button>
 
       {recommendations.map((recommendation) => {

@@ -1,20 +1,45 @@
-const fetch = require('node-fetch')
-
 async function writeToPod(webId, accessToken, data) {
   try {
-    // Voor nu een minimale debug implementatie.
-    // Later vervangen we dit met echte Solid Pod write logic.
+    if (!webId) {
+      return {
+        success: false,
+        error: 'No WebID provided',
+      }
+    }
+
+    if (!accessToken) {
+      return {
+        success: false,
+        error: 'No access token provided',
+      }
+    }
+
+    const podUrl = `${webId}/pod/test.json`
+
+    const response = await fetch(podUrl, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const text = await response.text()
 
     return {
-      success: true,
-      message: 'Simulated pod write (baseline phase)',
-      webId,
-      storedData: data,
+      success: response.ok,
+      status: response.status,
+      podUrl,
+      responseBody: text,
     }
   } catch (error) {
     return {
       success: false,
+      podUrl: webId ? `${webId}/pod/test.json` : null,
       error: error.message,
+      errorName: error.name,
+      errorStack: error.stack,
     }
   }
 }

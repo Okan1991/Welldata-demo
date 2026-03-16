@@ -19,6 +19,39 @@ function App() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+  async function handleHtiTokenFromUrl() {
+    const params = new URLSearchParams(window.location.search)
+    const htiToken = params.get('hti_token')
+
+    if (!htiToken) return
+
+    try {
+      console.log('HTI token received in URL:', htiToken)
+
+      const response = await fetch('http://localhost:3000/api/exchange-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          htiToken,
+        }),
+      })
+
+      const result = await response.json()
+
+      console.log('HTI exchange result:', result)
+      alert(JSON.stringify(result, null, 2))
+    } catch (error) {
+      console.error(error)
+      alert('HTI exchange from URL failed')
+    }
+  }
+
+  handleHtiTokenFromUrl()
+}, [])
+
+  useEffect(() => {
     async function loadData() {
       try {
         setLoading(true)
