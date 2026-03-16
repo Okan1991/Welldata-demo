@@ -1,0 +1,31 @@
+1. Start backend:
+   node server.cjs
+
+2. Open frontend:
+   http://localhost:5174
+
+3. Login via WeAre / DigiD
+
+4. Capture HTI token from frontend callback URL
+
+5. Exchange HTI token:
+   POST /api/exchange-token-real
+   -> returns accessRequestVcId
+
+6. Start consent:
+   POST /api/start-consent
+   -> open consentUrl
+
+7. Approve consent in browser
+   -> capture accessGrantVcId from callback
+
+8. Exchange access grant:
+   POST /api/exchange-access-grant
+   -> returns UMA access token
+
+9. Protected read:
+   Invoke-WebRequest with Authorization: Bearer <umaAccessToken>
+   -> expect 200 OK
+
+10. Optional:
+   show returned RDF/Turtle content from protected resource
