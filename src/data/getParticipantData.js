@@ -80,7 +80,12 @@ export function getRecommendationsWithMeta(participant) {
 
 export { OBSERVATION_DOMAINS, getDomainMeta }
 
-export async function submitSurvey(webId, fhirData = []) {
+export async function submitSurvey(
+  webId,
+  fhirData = [],
+  accessToken = null,
+  resourceUrl = null
+) {
   const response = await fetch('http://localhost:3000/api/survey/save', {
     method: 'POST',
     headers: {
@@ -88,6 +93,8 @@ export async function submitSurvey(webId, fhirData = []) {
     },
     body: JSON.stringify({
       webId,
+      accessToken,
+      resourceUrl,
       fhirData,
     }),
   })

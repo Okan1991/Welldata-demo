@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
-import {
-  submitSurvey,
-  getAuthDebugStatus,
-} from '../../data/getParticipantData'
+import { submitSurvey } from '../../data/getParticipantData'
 import { getRecommendationsWithMeta } from '../../data/getParticipantData.js'
 
-export default function ActionPanel({ participant }) {
+export default function ActionPanel({
+  participant,
+  authState,
+  surveyPayload = null,
+  onAuthUpdate,
+}) {
   const [statusMap, setStatusMap] = useState({})
+  const [demoResult, setDemoResult] = useState(null)
+  const [demoError, setDemoError] = useState('')
 
   if (!participant) {
     return <p>No participant data available.</p>
@@ -32,57 +36,78 @@ export default function ActionPanel({ participant }) {
   }
 
   async function handleTestSurveySave() {
+    setDemoError('')
+    setDemoResult(null)
+
     try {
+      const webId =
+        authState?.webId ||
+        'https://example.org/profile/card#me'
+
+      const accessToken =
+        authState?.umaAccessToken || null
+
+      const resourceUrl =
+        authState?.resourceUrl || null
+
       const result = await submitSurvey(
-        'https://example.org/profile/card#me',
+        webId,
         [
           {
             linkId: 'q1',
             text: 'Stress',
             answer: [{ valueString: 'Often' }],
           },
-        ]
+        ],
+        accessToken,
+        resourceUrl
       )
 
       console.log('Survey saved:', result)
-      alert('Survey opgeslagen (test)')
+      setDemoResult(result)
     } catch (error) {
       console.error(error)
-      alert('Survey opslaan mislukt')
-    }
-  }
-
-  async function handleAuthDebugTest() {
-    try {
-      const result = await getAuthDebugStatus('TEST_TOKEN')
-
-      console.log('Auth debug result:', result)
-      alert(JSON.stringify(result, null, 2))
-    } catch (error) {
-      console.error(error)
-      alert('Auth debug test failed')
+      setDemoError(error.message || 'Survey opslaan mislukt')
     }
   }
 
   async function handleTokenExchangeTest() {
+    setDemoError('')
+    setDemoResult(null)
+
     try {
-      const response = await fetch('http://localhost:3000/api/exchange-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          htiToken: 'TEST_TOKEN',
-        }),
-      })
+      const response = await fetch(
+        'http://localhost:3000/api/exchange-access-grant',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            accessGrantVcId: authState?.accessGrantVcId || null,
+          }),
+        }
+      )
 
       const result = await response.json()
 
       console.log('Token exchange result:', result)
-      alert(JSON.stringify(result, null, 2))
+      setDemoResult(result)
+
+      if (result?.success && typeof onAuthUpdate === 'function') {
+        onAuthUpdate((prev) => ({
+          ...prev,
+          phase: result?.phase || prev.phase,
+          message: result?.message || prev.message,
+          umaAccessToken: result?.umaExchange?.accessToken || prev.umaAccessToken,
+          resourceUrl:
+            result?.accessGrantVcResult?.vc?.credentialSubject?.providedConsent?.forPersonalData ||
+            prev.resourceUrl,
+        }))
+      }
     } catch (error) {
       console.error(error)
-      alert('Token exchange test failed')
+      setDemoError('Token exchange test failed')
     }
   }
 
@@ -98,19 +123,34 @@ export default function ActionPanel({ participant }) {
 
       <button
         type="button"
-        onClick={handleAuthDebugTest}
-        style={{ marginBottom: '16px', marginLeft: '8px' }}
-      >
-        Test auth debug
-      </button>
-
-      <button
-        type="button"
         onClick={handleTokenExchangeTest}
         style={{ marginBottom: '16px', marginLeft: '8px' }}
       >
         Test token exchange
       </button>
+
+      {demoError && (
+        <p style={{ color: 'red', marginBottom: '12px' }}>
+          {demoError}
+        </p>
+      )}
+
+      {demoResult && (
+        <div
+          style={{
+            border: '1px solid #ccc',
+            borderRadius: '6px',
+            padding: '12px',
+            marginBottom: '16px',
+            background: '#f8f8f8',
+          }}
+        >
+          <p><strong>Demo result:</strong></p>
+          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            {JSON.stringify(demoResult, null, 2)}
+          </pre>
+        </div>
+      )}
 
       {recommendations.map((recommendation) => {
         const currentStatus =
