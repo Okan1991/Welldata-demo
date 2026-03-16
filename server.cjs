@@ -238,33 +238,19 @@ app.post('/api/start-consent', async (req, res) => {
 // ------------------------------
 // Access grant callback route
 // ------------------------------
-app.get('/access-grant-callback', async (req, res) => {
-  try {
-    const { approved, 'access-grant-id': accessGrantId } = req.query
+app.get('/access-grant-callback', (req, res) => {
+  const accessGrantId = req.query['access-grant-id'] || req.query.access_grant
+  const approved = req.query.approved
 
-    console.log('Consent result:', approved)
-    console.log('Access Grant VC:', accessGrantId)
+  console.log('Consent callback — approved:', approved, 'grant:', accessGrantId)
 
-    if (approved !== 'true') {
-      return res.json({
-        success: false,
-        message: 'User denied consent',
-      })
-    }
-
-    return res.json({
-      success: true,
-      phase: '3F',
-      message: 'Access grant received',
-      accessGrantVcId: accessGrantId,
-      nextStep: 'Exchange this grant for an access token',
-    })
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: err.message,
-    })
+  if (approved === 'true' && accessGrantId) {
+    return res.redirect(
+      `${FRONTEND_URL}/?access_grant_id=${encodeURIComponent(accessGrantId)}`
+    )
   }
+
+  return res.redirect(`${FRONTEND_URL}/?error=consent_denied`)
 })
 
 // ------------------------------

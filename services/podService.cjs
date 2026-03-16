@@ -1,4 +1,4 @@
-async function writeToPod(webId, accessToken, data) {
+async function writeToPod({ webId, accessToken, data, resourceUrl }) {
   try {
     if (!webId) {
       return {
@@ -14,9 +14,14 @@ async function writeToPod(webId, accessToken, data) {
       }
     }
 
-    const podUrl = `${webId}/pod/test.json`
+    if (!resourceUrl) {
+      return {
+        success: false,
+        error: 'No resourceUrl provided',
+      }
+    }
 
-    const response = await fetch(podUrl, {
+    const response = await fetch(resourceUrl, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -30,13 +35,13 @@ async function writeToPod(webId, accessToken, data) {
     return {
       success: response.ok,
       status: response.status,
-      podUrl,
+      podUrl: resourceUrl,
       responseBody: text,
     }
   } catch (error) {
     return {
       success: false,
-      podUrl: webId ? `${webId}/pod/test.json` : null,
+      podUrl: resourceUrl || null,
       error: error.message,
       errorName: error.name,
       errorStack: error.stack,

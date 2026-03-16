@@ -2,6 +2,8 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 
+const { writeToPod } = require('../services/podService.cjs')
+
 const router = express.Router()
 
 function ensureSurveyDir() {
@@ -19,6 +21,8 @@ router.post('/survey/save', async (req, res) => {
   try {
     const {
       webId = null,
+      accessToken = null,
+      resourceUrl = null,
       timestamp = new Date().toISOString(),
       fhirData = [],
     } = req.body || {}
@@ -39,6 +43,9 @@ router.post('/survey/save', async (req, res) => {
       item: normalizedItems,
     }
 
+    // ------------------------------
+    // Local save (debug / fallback)
+    // ------------------------------
     const dir = ensureSurveyDir()
     const safeTime = timestamp.replace(/[:.]/g, '-')
     const filename = `survey-save-${safeTime}.json`
@@ -53,15 +60,38 @@ router.post('/survey/save', async (req, res) => {
 
     fs.writeFileSync(filepath, JSON.stringify(storedRecord, null, 2), 'utf-8')
 
+    // ------------------------------
+    // Optional Pod write
+    // ------------------------------
+    let podWriteResult = {
+      attempted: false,
+    }
+
+    if (webId && accessToken && resourceUrl) {
+      podWriteResult = {
+        attempted: true,
+        ...(await writeToPod({
+          webId,
+          accessToken,
+          data: surveyPayload,
+          resourceUrl,
+        })),
+      }
+    }
+
+    // ------------------------------
+    // Response
+    // ------------------------------
     return res.json({
       success: true,
-      message: 'Survey payload prepared and saved locally',
-      webId,
-      timestamp,
+      message: 'Survey processed',
+      localSave: {
+        filename,
+        filepath,
+        itemCount: normalizedItems.length,
+      },
+      podWrite: podWriteResult,
       surveyPayload,
-      itemCount: normalizedItems.length,
-      filename,
-      filepath,
     })
   } catch (error) {
     console.error('Survey route error:', error)

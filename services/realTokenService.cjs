@@ -279,10 +279,11 @@ async function exchangeHtiTokenReal(htiToken) {
   })
 
   return {
-    success: false,
+    success: Boolean(accessRequest?.success),
     phase: '3E',
-    message:
-      'HTI token inspected; client authentication attempted; full backend authorization flow not implemented yet',
+    message: accessRequest?.success
+      ? 'HTI token processed and access request created successfully'
+      : 'HTI token processed but access request creation failed',
     receivedHtiToken: true,
     htiTokenPreview: `${htiToken.slice(0, 20)}...`,
     ...inspection,
@@ -290,8 +291,9 @@ async function exchangeHtiTokenReal(htiToken) {
     vcConfig,
     accessRequest,
     accessRequestVcId: accessRequest?.responseBody?.id || null,
-    nextStep:
-      'Inspect access request response and continue toward consent / UMA flow',
+    nextStep: accessRequest?.success
+      ? 'Continue toward consent / UMA flow'
+      : 'Inspect access request response and fix the failing upstream dependency',
   }
 }
 
@@ -574,10 +576,11 @@ async function exchangeAccessGrantForToken(accessGrantVcId) {
   })
 
   return {
-    success: false,
+    success: Boolean(umaExchange?.success),
     phase: '3F',
-    message:
-      'Access grant received; UMA configuration inspected; final token exchange attempted',
+    message: umaExchange?.success
+      ? 'Access grant processed and UMA token exchange succeeded'
+      : 'Access grant processed but UMA token exchange failed',
     accessGrantVcId,
     clientAuth,
     umaConfig,
@@ -585,8 +588,9 @@ async function exchangeAccessGrantForToken(accessGrantVcId) {
     ticketResult,
     umaClaimTokenPresent: Boolean(umaClaimToken),
     umaExchange,
-    nextStep:
-      'Inspect UMA exchange response and use final access token for protected resource access',
+    nextStep: umaExchange?.success
+      ? 'Use final access token for protected resource access'
+      : 'Inspect UMA exchange response and retry token exchange if needed',
   }
 }
 
