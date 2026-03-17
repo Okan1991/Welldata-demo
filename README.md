@@ -1,4 +1,4 @@
-# WellData Month-1 PIP Demo
+# WellData Month-1 Demo
 
 Participant dashboard demonstrating three preventive health features with WeAre federated authentication.
 
